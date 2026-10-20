@@ -1,137 +1,174 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>BIR Income Tax Return System</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f5f2;
-            margin: 0;
-            padding: 30px;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: auto;
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px #cccccc;
-        }
-
-        h1 {
-            text-align: center;
-            color: #315b3b;
-        }
-
-        p {
-            text-align: center;
-            color: #555555;
-        }
-
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: bold;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            box-sizing: border-box;
-            border: 1px solid #cccccc;
-            border-radius: 5px;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 20px;
-            background-color: #315b3b;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #24452d;
-        }
-
-        #result {
-            margin-top: 25px;
-            padding: 15px;
-            background-color: #eef5ee;
-            border-radius: 5px;
-            white-space: pre-line;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIR Income Tax Calculator - JavaScript Procedural</title>
+<style>
+    * { box-sizing: border-box; }
+    body {
+        margin: 0; padding: 24px; font-family: Arial, sans-serif;
+        background: #eef3ee; color: #26352a;
+    }
+    .container {
+        max-width: 650px; margin: auto; padding: 24px;
+        background: white; border-radius: 12px;
+        box-shadow: 0 3px 14px #00000018;
+    }
+    h1 { margin: 0 0 8px; text-align: center; color: #315b3b; font-size: 25px; }
+    .subtitle { margin: 0 0 22px; text-align: center; color: #667267; }
+    h2 { margin: 20px 0 12px; padding: 10px; border-radius: 5px;
+        background: #315b3b; color: white; font-size: 16px; }
+    label { display: block; margin: 12px 0 5px; font-weight: bold; }
+    input { width: 100%; padding: 10px; border: 1px solid #cbd5cc;
+        border-radius: 5px; font-size: 15px; }
+    input:focus { outline: 2px solid #a7c5ad; border-color: #315b3b; }
+    .buttons { display: flex; gap: 10px; margin-top: 20px; }
+    button { flex: 1; padding: 12px; border: 0; border-radius: 5px;
+        font-size: 15px; cursor: pointer; }
+    .calculate { background: #315b3b; color: white; }
+    .reset { background: #e0e5e0; color: #26352a; }
+    #result { display: none; margin-top: 22px; padding: 18px;
+        background: #f4f8f4; border: 1px solid #d8e3d8; border-radius: 8px; }
+    #result h2 { margin-top: 0; text-align: center; }
+    .row { display: flex; justify-content: space-between; gap: 16px;
+        padding: 9px 0; border-bottom: 1px solid #e1e8e1; }
+    .row span:last-child { text-align: right; font-weight: bold; overflow-wrap: anywhere; }
+    .final { margin-top: 15px; padding: 15px; border-radius: 6px;
+        background: #e3f0e5; text-align: center; }
+    .final strong { display: block; margin-top: 8px; color: #315b3b; font-size: 24px; }
+    .note { margin: 18px 0 0; text-align: center; color: #667267; font-size: 12px; line-height: 1.5; }
+    @media (max-width: 480px) { body { padding: 12px; } .container { padding: 16px; } h1 { font-size: 21px; } }
+</style>
 </head>
-
 <body>
+<div class="container">
+    <h1>BIR Income Tax Calculator</h1>
+    <p class="subtitle">Government Employee · JavaScript Procedural System</p>
 
-    <div class="container">
+    <h2>Employee Information</h2>
+    <label for="name">Employee Name</label>
+    <input id="name" type="text" placeholder="Enter employee name">
 
-        <h1>BIR Income Tax Return System</h1>
+    <h2>Income Information</h2>
+    <label for="salary">Monthly Basic Salary (₱)</label>
+    <input id="salary" type="number" min="0" step="0.01" placeholder="e.g. 30000">
 
-        <p>Government Employee Income Tax Calculator</p>
+    <label for="otherIncome">Other Monthly Taxable Income (₱)</label>
+    <input id="otherIncome" type="number" min="0" step="0.01" value="0">
 
-        <label>Employee Name</label>
-        <input type="text" id="name" placeholder="Enter employee name">
+    <label for="months">Number of Months Worked (1–12)</label>
+    <input id="months" type="number" min="1" max="12" step="1" value="12">
 
-        <label>Monthly Basic Salary</label>
-        <input type="number" id="salary" placeholder="Enter monthly salary">
+    <label for="taxWithheld">Income Tax Already Withheld for the Year (₱)</label>
+    <input id="taxWithheld" type="number" min="0" step="0.01" value="0">
 
-        <label>Other Monthly Taxable Income</label>
-        <input type="number" id="otherIncome" placeholder="Enter other income">
-
-        <label>Number of Months Worked</label>
-        <input type="number" id="months" placeholder="Example: 12">
-
-        <button onclick="calculateTax()">Calculate Income Tax</button>
-
-        <div id="result">
-            Your tax result will appear here.
-        </div>
-
+    <div class="buttons">
+        <button class="calculate" onclick="calculateTax()">Calculate Tax</button>
+        <button class="reset" onclick="resetForm()">Reset</button>
     </div>
 
-    <script>
+    <div id="result" aria-live="polite"></div>
+    <p class="note">For educational use only. This estimate uses annual income as taxable income and does not account for exemptions, deductions, special tax treatments, or official BIR filing requirements.</p>
+</div>
 
-        async function calculateTax() {
+<script>
+function calculateTax() {
+    const name = document.getElementById("name").value.trim();
+    const salaryText = document.getElementById("salary").value;
+    const otherText = document.getElementById("otherIncome").value;
+    const monthsText = document.getElementById("months").value;
+    const withheldText = document.getElementById("taxWithheld").value;
 
-            const name = document.getElementById("name").value;
-            const salary = document.getElementById("salary").value;
-            const otherIncome = document.getElementById("otherIncome").value;
-            const months = document.getElementById("months").value;
+    if (!name || salaryText === "" || otherText === "" ||
+        monthsText === "" || withheldText === "") {
+        alert("Please complete all fields.");
+        return;
+    }
 
-            if (name === "" || salary === "" || otherIncome === "" || months === "") {
-                document.getElementById("result").innerText =
-                    "Please complete all fields.";
-                return;
-            }
+    const salary = Number(salaryText);
+    const otherIncome = Number(otherText);
+    const months = Number(monthsText);
+    const taxWithheld = Number(withheldText);
 
-            const response = await fetch("/calculate", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    name: name,
-                    salary: salary,
-                    otherIncome: otherIncome,
-                    months: months
-                })
-            });
+    if (!Number.isFinite(salary) || !Number.isFinite(otherIncome) ||
+        !Number.isFinite(months) || !Number.isFinite(taxWithheld) ||
+        salary < 0 || otherIncome < 0 || taxWithheld < 0 ||
+        !Number.isInteger(months) || months < 1 || months > 12) {
+        alert("Please enter valid amounts and a number of months from 1 to 12.");
+        return;
+    }
 
-            const data = await response.json();
+    const annualSalary = salary * months;
+    const annualOtherIncome = otherIncome * months;
+    const totalAnnualIncome = annualSalary + annualOtherIncome;
+    const taxableIncome = totalAnnualIncome;
 
-            document.getElementById("result").innerText = data.result;
-        }
+    // Philippine individual graduated income tax brackets (TRAIN, 2023 onward).
+    let taxDue;
+    if (taxableIncome <= 250000) {
+        taxDue = 0;
+    } else if (taxableIncome <= 400000) {
+        taxDue = (taxableIncome - 250000) * 0.15;
+    } else if (taxableIncome <= 800000) {
+        taxDue = 22500 + (taxableIncome - 400000) * 0.20;
+    } else if (taxableIncome <= 2000000) {
+        taxDue = 102500 + (taxableIncome - 800000) * 0.25;
+    } else if (taxableIncome <= 8000000) {
+        taxDue = 402500 + (taxableIncome - 2000000) * 0.30;
+    } else {
+        taxDue = 2202500 + (taxableIncome - 8000000) * 0.35;
+    }
 
-    </script>
+    const balance = taxDue - taxWithheld;
+    const netIncome = totalAnnualIncome - taxDue;
+    const money = amount => "₱" + amount.toLocaleString("en-PH", {
+        minimumFractionDigits: 2, maximumFractionDigits: 2
+    });
 
+    let balanceLabel;
+    let balanceText;
+    if (balance > 0) {
+        balanceLabel = "Estimated Tax Still Payable";
+        balanceText = money(balance);
+    } else if (balance < 0) {
+        balanceLabel = "Potential Tax Overpayment";
+        balanceText = money(Math.abs(balance));
+    } else {
+        balanceLabel = "Tax Balance";
+        balanceText = money(0);
+    }
+
+    document.getElementById("result").style.display = "block";
+    document.getElementById("result").innerHTML = `
+        <h2>Income Tax Summary</h2>
+        <div class="row"><span>Employee</span><span>${escapeHTML(name)}</span></div>
+        <div class="row"><span>Annual Basic Salary</span><span>${money(annualSalary)}</span></div>
+        <div class="row"><span>Annual Other Taxable Income</span><span>${money(annualOtherIncome)}</span></div>
+        <div class="row"><span>Total Annual / Taxable Income (estimate)</span><span>${money(taxableIncome)}</span></div>
+        <div class="row"><span>Estimated Annual Income Tax</span><span>${money(taxDue)}</span></div>
+        <div class="row"><span>Tax Already Withheld</span><span>${money(taxWithheld)}</span></div>
+        <div class="row"><span>${balanceLabel}</span><span>${balanceText}</span></div>
+        <div class="final">Estimated Annual Income After Income Tax<strong>${money(netIncome)}</strong></div>
+    `;
+}
+
+function resetForm() {
+    document.getElementById("name").value = "";
+    document.getElementById("salary").value = "";
+    document.getElementById("otherIncome").value = "0";
+    document.getElementById("months").value = "12";
+    document.getElementById("taxWithheld").value = "0";
+    document.getElementById("result").style.display = "none";
+    document.getElementById("result").innerHTML = "";
+}
+
+function escapeHTML(value) {
+    return value.replace(/[&<>"']/g, character => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;",
+        '"': "&quot;", "'": "&#39;"
+    })[character]);
+}
+</script>
 </body>
 </html>
